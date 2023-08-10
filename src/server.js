@@ -14,6 +14,16 @@ const handleListen = () => console.log("Listen on http://localhost:3000");
 
 const server = http.createServer(app); // http server에 접근
 
-const wss = new WebSocket.Server({server}) // http 서버 위에 webSocket server 생성
+const wss = new WebSocket.Server({ server }); // http 서버 위에 webSocket server 생성
 
-server.listen(3000, handleListen)
+wss.on("connection", (socket) => {
+  console.log("Connected to Browser");
+  socket.on("close", () => console.log("Disconnected from the Browser"));
+  socket.on("message", (message, isBinary) => {
+    message = isBinary ? message : message.toString();
+    console.log(message);
+  });
+  socket.send("hello!!!");
+});
+
+server.listen(3000, handleListen);
