@@ -21,9 +21,8 @@ wss.on("connection", (socket) => {
   socket.on("close", () => console.log("Disconnected from the Browser"));
   socket.on("message", (message, isBinary) => {
     message = isBinary ? message : message.toString();
-    console.log(message);
+    socket.send(message);
   });
-  socket.send("hello!!!");
 });
 
 server.listen(3000, handleListen);
