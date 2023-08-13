@@ -16,12 +16,14 @@ const server = http.createServer(app); // http server에 접근
 
 const wss = new WebSocket.Server({ server }); // http 서버 위에 webSocket server 생성
 
+const sockets = []; // 서버에 누군가 연결 시, 그 연결을 넣음
 wss.on("connection", (socket) => {
+  sockets.push(socket);
   console.log("Connected to Browser");
   socket.on("close", () => console.log("Disconnected from the Browser"));
   socket.on("message", (message, isBinary) => {
     message = isBinary ? message : message.toString();
-    socket.send(message);
+    sockets.forEach((socket) => socket.send(message));
   });
 });
 
