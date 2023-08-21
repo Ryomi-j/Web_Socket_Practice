@@ -1,6 +1,6 @@
 import http from "http";
 import express from "express";
-import WebSocket from "ws";
+import SocketIO from "socket.io";
 
 const app = express();
 
@@ -12,30 +12,11 @@ app.get("/*", (req, res) => res.redirect("/"));
 
 const handleListen = () => console.log("Listen on http://localhost:3000");
 
-const server = http.createServer(app); // http server에 접근
+const httpServer = http.createServer(app); // http server에 접근
+const wsServer = SocketIO(httpServer)
 
-const wss = new WebSocket.Server({ server }); // http 서버 위에 webSocket server 생성
+wsServer.on('connection', socket => {
+  console.log(socket)
+})
 
-const sockets = []; // 서버에 누군가 연결 시, 그 연결을 넣음
-wss.on("connection", (socket) => {
-  sockets.push(socket);
-  socket["nickname"] = "Anon";
-  console.log("Connected to Browser");
-  socket.on("close", () => console.log("Disconnected from the Browser"));
-  socket.on("message", (message, isBinary) => {
-    message = isBinary ? JSON.parse(message) : JSON.parse(message.toString());
-
-    switch (message.type) {
-      case "new_message":
-        sockets.forEach((aSocket) =>
-          aSocket.send(`${socket.nickname}: ${message.payload}`)
-        );
-        break;
-      case "nickname":
-        socket["nickname"] = message.payload;
-        break;
-    }
-  });
-});
-
-server.listen(3000, handleListen);
+httpServer.listen(3000, handleListen);
