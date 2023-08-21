@@ -19,11 +19,22 @@ const wss = new WebSocket.Server({ server }); // http 서버 위에 webSocket se
 const sockets = []; // 서버에 누군가 연결 시, 그 연결을 넣음
 wss.on("connection", (socket) => {
   sockets.push(socket);
+  socket["nickname"] = "Anon";
   console.log("Connected to Browser");
   socket.on("close", () => console.log("Disconnected from the Browser"));
   socket.on("message", (message, isBinary) => {
-    message = isBinary ? message : message.toString();
-    sockets.forEach((socket) => socket.send(message));
+    message = isBinary ? JSON.parse(message) : JSON.parse(message.toString());
+
+    switch (message.type) {
+      case "new_message":
+        sockets.forEach((aSocket) =>
+          aSocket.send(`${socket.nickname}: ${message.payload}`)
+        );
+        break;
+      case "nickname":
+        socket["nickname"] = message.payload;
+        break;
+    }
   });
 });
 
