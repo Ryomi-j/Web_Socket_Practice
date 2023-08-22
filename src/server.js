@@ -13,10 +13,15 @@ app.get("/*", (req, res) => res.redirect("/"));
 const handleListen = () => console.log("Listen on http://localhost:3000");
 
 const httpServer = http.createServer(app); // http server에 접근
-const wsServer = SocketIO(httpServer)
+const wsServer = SocketIO(httpServer);
 
-wsServer.on('connection', socket => {
-  console.log(socket)
-})
+wsServer.on("connection", (socket) => {
+  socket.on("enter_room", (msg, done) => {
+    console.log(msg);
+    setTimeout(()=> {
+      done() // 콜백함수
+    }, 1000)
+  });
+});
 
 httpServer.listen(3000, handleListen);
