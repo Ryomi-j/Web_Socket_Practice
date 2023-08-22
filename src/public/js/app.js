@@ -25,31 +25,26 @@ function handleMessageSubmit(e) {
   input.value = "";
 }
 
-function handleNicknameSubmit(e) {
-  e.preventDefault();
-  const input = room.querySelector("#name input");
-  socket.emit('nickname', input.value)
-}
-
 function showRoom() {
-  // front에서 실행할 코드
   welcom.hidden = true;
   room.hidden = false;
 
   const h3 = room.querySelector("h3");
   h3.innerText = `Room ${roomName}`;
   const msgForm = room.querySelector("#msg");
-  const nameForm = room.querySelector("#name");
   msgForm.addEventListener("submit", handleMessageSubmit);
-  nameForm.addEventListener("submit", handleNicknameSubmit);
 }
 
 function handleRoomSubmit(e) {
   e.preventDefault();
-  const input = form.querySelector("input");
-  socket.emit("enter_room", input.value, showRoom);
-  roomName = input.value;
-  input.value = "";
+  const nicknameInput = form.querySelector("#nickname");
+  const roomNameInput = form.querySelector("#roomName");
+
+  socket.emit('nickname', nicknameInput.value)
+
+  socket.emit("enter_room", roomNameInput.value, showRoom);
+  roomName = roomNameInput.value;
+  roomName.value = "";
 }
 
 form.addEventListener("submit", handleRoomSubmit);
