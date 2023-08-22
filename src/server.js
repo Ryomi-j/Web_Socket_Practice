@@ -12,7 +12,7 @@ app.get("/*", (req, res) => res.redirect("/"));
 
 const handleListen = () => console.log("Listen on http://localhost:3000");
 
-const httpServer = http.createServer(app); // http server에 접근
+const httpServer = http.createServer(app);
 const wsServer = SocketIO(httpServer);
 
 wsServer.on("connection", (socket) => {
