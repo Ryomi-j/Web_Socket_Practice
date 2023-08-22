@@ -23,6 +23,10 @@ wsServer.on("connection", (socket) => {
     done()
     socket.to(roomName).emit('welcome') // 본인을 제외한 모두에게 'welcome' 이벤트 실행
   });
+
+  socket.on('disconnecting', () => {
+    socket.rooms.forEach(room => socket.to(room).emit("bye"))
+  })
 });
 
 httpServer.listen(3000, handleListen);
