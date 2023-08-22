@@ -16,10 +16,11 @@ const httpServer = http.createServer(app); // http server에 접근
 const wsServer = SocketIO(httpServer);
 
 wsServer.on("connection", (socket) => {
-  socket.on("enter_room", (msg, done) => {
-    console.log(msg);
-    setTimeout(()=> {
-      done() // 콜백함수
+  socket.on("enter_room", (roomName, done) => {
+    console.log(roomName)
+
+    setTimeout(() => {
+      done() // 보안상의 문제로 frontend에서 코드 실행 (누군가가 db를 지우는 코드를 작성할 수 있음)
     }, 1000)
   });
 });
