@@ -16,22 +16,26 @@ const httpServer = http.createServer(app); // http server에 접근
 const wsServer = SocketIO(httpServer);
 
 wsServer.on("connection", (socket) => {
+  socket["nickname"] = "Anon";
+
   socket.onAny((e) => console.log(`Socket Event: ${e}`));
 
   socket.on("enter_room", (roomName, done) => {
-    socket.join(roomName)
-    done()
-    socket.to(roomName).emit('welcome') // 본인을 제외한 모두에게 'welcome' 이벤트 실행
+    socket.join(roomName);
+    done();
+    socket.to(roomName).emit("welcome", socket.nickname);
   });
 
-  socket.on('disconnecting', () => {
-    socket.rooms.forEach(room => socket.to(room).emit("bye"))
-  })
+  socket.on("disconnecting", () => {
+    socket.rooms.forEach((room) => socket.to(room).emit("bye", socket.nickname));
+  });
 
   socket.on("new_message", (msg, room, done) => {
-    socket.to(room).emit("new_message", msg);
+    socket.to(room).emit("new_message", `${socket.nickname}: ${msg}`);
     done();
   });
+
+  socket.on("nickname", (nickname) => (socket["nickname"] = nickname));
 });
 
 httpServer.listen(3000, handleListen);
