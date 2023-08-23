@@ -1,7 +1,7 @@
 const socket = io();
 
-const welcom = document.getElementById("welcome");
-const form = welcom.querySelector("form");
+const welcome = document.getElementById("welcome");
+const form = welcome.querySelector("form");
 const room = document.getElementById("room");
 
 room.hidden = true;
@@ -26,7 +26,7 @@ function handleMessageSubmit(e) {
 }
 
 function showRoom() {
-  welcom.hidden = true;
+  welcome.hidden = true;
   room.hidden = false;
 
   const h3 = room.querySelector("h3");
@@ -40,7 +40,7 @@ function handleRoomSubmit(e) {
   const nicknameInput = form.querySelector("#nickname");
   const roomNameInput = form.querySelector("#roomName");
 
-  socket.emit('nickname', nicknameInput.value)
+  socket.emit("nickname", nicknameInput.value);
 
   socket.emit("enter_room", roomNameInput.value, showRoom);
   roomName = roomNameInput.value;
@@ -58,3 +58,16 @@ socket.on("bye", (user) => {
 });
 
 socket.on("new_message", addMessage);
+
+socket.on("room_change", (rooms) => {
+  const roomList = welcome.querySelector("ul");
+  roomList.innerHTML = "";
+
+  if (rooms.length === 0) return; // 방의 갯수가 0이면 이전에 보여주던 room list 제거
+
+  rooms.forEach((room) => {
+    const li = document.createElement("li");
+    li.innerText = room;
+    roomList.append(li);
+  });
+});
