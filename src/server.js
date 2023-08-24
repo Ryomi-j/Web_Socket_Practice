@@ -1,6 +1,6 @@
 import http from "http";
 import express from "express";
-import { SocketIO } from "socket.io";
+import SocketIO from "socket.io";
 
 const app = express();
 
@@ -13,6 +13,13 @@ app.get("/*", (req, res) => res.redirect("/"));
 const handleListen = () => console.log("Listen on http://localhost:3000");
 
 const httpServer = http.createServer(app);
-const wsServer = SocketIO(httpServer)
+const wsServer = SocketIO(httpServer);
+
+wsServer.on("connection", (socket) => {
+  socket.on("join_room", (roomName, done) => {
+    socket.join(roomName);
+    done();
+  });
+});
 
 httpServer.listen(3000, handleListen);

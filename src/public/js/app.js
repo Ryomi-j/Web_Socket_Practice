@@ -4,6 +4,9 @@ const myFace = document.getElementById("myFace");
 const muteBtn = document.getElementById("mute");
 const cameraBtn = document.getElementById("camera");
 const cameraSelect = document.getElementById("cameras");
+const call = document.getElementById("call");
+
+call.hidden = true;
 
 let myStream;
 let muted = false;
@@ -15,13 +18,13 @@ async function getCameras() {
     const cameras = (await devices).filter(
       (device) => device.kind === "videoinput"
     );
-    const currentCamera = myStream.getVideoTracks()[0]
+    const currentCamera = myStream.getVideoTracks()[0];
     cameras.forEach((camera) => {
       const option = document.createElement("option");
       option.value = camera.deviceId;
       option.innerText = camera.label;
-      
-      if(currentCamera.label === camera.label) option.selected = true
+
+      if (currentCamera.label === camera.label) option.selected = true;
       cameraSelect.appendChild(option);
     });
   } catch (e) {
@@ -44,8 +47,6 @@ async function getMedia(deviceId) {
     console.log(e);
   }
 }
-
-getMedia();
 
 function handleMuteClick() {
   myStream
@@ -82,3 +83,21 @@ async function handleCameraChange() {
 muteBtn.addEventListener("click", handleMuteClick);
 cameraBtn.addEventListener("click", handleCameraClick);
 cameraSelect.addEventListener("input", handleCameraChange);
+
+const welcome = document.getElementById("welcome");
+welcomeFrom = welcome.querySelector("form");
+
+function startMedia() {
+  welcome.hidden = true;
+  call.hidden = false;
+  getMedia();
+}
+
+function handleWelcomeSubmit(e) {
+  e.preventDefault();
+  const input = welcomeFrom.querySelector("input");
+  socket.emit("join_room", input.value, startMedia);
+  input.value = "";
+}
+
+welcomeFrom.addEventListener("submit", handleWelcomeSubmit);
